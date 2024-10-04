@@ -42,3 +42,16 @@ jobs:
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
         
+      - name: Health Check
+        run: |
+          echo "Waiting for server to start..."
+          sleep 30
+          echo "Checking health of deployed app..."
+          response=$(curl --fail https://full-stack-open-pokedex-jvcn.onrender.com/healthz)
+          if [ "$response" == "ok" ]; then
+            echo "Health check passed!"
+          else
+            echo "Health check failed!"
+            exit 1
+          fi
+        
