@@ -5,9 +5,14 @@ on:
     branches:
       - main
 
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
 
     steps:
       - name: Run actions/checkout@v4
@@ -41,7 +46,7 @@ jobs:
 
       - name: Trigger deployment
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
-        
+
       - name: Health Check
         run: |
           echo "Waiting for server to start..."
@@ -54,4 +59,3 @@ jobs:
             echo "Health check failed!"
             exit 1
           fi
-        
