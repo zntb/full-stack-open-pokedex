@@ -12,11 +12,18 @@ on:
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
+
+    permissions:
+      contents: write
 
     steps:
       - name: Run actions/checkout@v4
         uses: actions/checkout@v4
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run actions/setup-node@v4
         uses: actions/setup-node@v4
