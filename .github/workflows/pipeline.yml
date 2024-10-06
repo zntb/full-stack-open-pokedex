@@ -59,6 +59,24 @@ jobs:
             exit 1
           fi
 
+      - name: Notify success
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ success() }}
+        with:
+          severity: info
+          description: A new version of Pokedex deployed!
+          details: to https://full-stack-open-pokedex-jvcn.onrender.com/ by ${{ github.event.head_commit.author.username }}
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Notify failure
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: ${{ failure() }}
+        with:
+          severity: error
+          description: Deployment failed!
+          details: commit ${{ github.event.head_commit.url }} by ${{ github.event.head_commit.author.username }} broke the deployment
+          webhookURL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
   tag_release:
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), 'skip') }}
     needs: [simple_deployment_pipeline]
