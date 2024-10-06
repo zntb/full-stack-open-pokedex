@@ -59,6 +59,28 @@ jobs:
             exit 1
           fi
 
+      - name: Notify success
+        uses: stegzilla/discord-notify@v4
+        if: success()
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          title: A new version of Pokedex deployed!
+          message: 'to https://full-stack-open-pokedex-jvcn.onrender.com/ by **${{ github.actor }}**'
+          include_image: true
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          username: GitHub PR Notifier
+
+      - name: Notify failure
+        uses: stegzilla/discord-notify@v4
+        if: failure()
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          title: Deployment failed!
+          message: 'Commit **${{ github.event.head_commit.url }}** by **${{ github.event.head_commit.author.username }}**'
+          include_image: true
+          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          username: GitHub PR Notifier
+
   tag_release:
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), 'skip') }}
     needs: [simple_deployment_pipeline]
